@@ -41,7 +41,7 @@ Measured across treatment arms (Rucaparib and Niraparib), across timepoints (pre
 - Kruskal-Wallis test
 - Post-hoc analysis with Benjamini-Hochberg correction
 
-Script: `scripts/parametric_hypothesis_testing.R`
+Script: `scripts/01_parametric_hypothesis_testing.R`
 
 ---
 
