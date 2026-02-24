@@ -1,18 +1,37 @@
+#tests to confirm normality
+R_shapiro_PD1<-shapiro.test(protein_data$PD.1_pre[protein_data$Treatment_Arm=="Rucaparib"])
+R_shapiro_PDL1<-shapiro.test(protein_data$PD.L1_pre[protein_data$Treatment_Arm=="Rucaparib"])
+R_shapiro_CTLA4<-shapiro.test(protein_data$CTLA.4_pre[protein_data$Treatment_Arm=="Rucaparib"])
+R_shapiro_SIRP<-shapiro.test(protein_data$SIRP_pre[protein_data$Treatment_Arm=="Rucaparib"])
+
+N_shapiro_PD1<-shapiro.test(protein_data$PD.1_pre[protein_data$Treatment_Arm=="niraparib"])
+N_shapiro_PDL1<-shapiro.test(protein_data$PD.L1_pre[protein_data$Treatment_Arm=="niraparib"])
+N_shapiro_CTLA4<-shapiro.test(protein_data$CTLA.4_pre[protein_data$Treatment_Arm=="niraparib"])
+N_shapiro_SIRP<-shapiro.test(protein_data$SIRP_pre[protein_data$Treatment_Arm=="niraparib"])
+
+-----------------------------------------------------------------------------------------------------
+
+#test to confirm variance 
+library(car) 
+R_PD1_lev<-leveneTest(protein_data$PD.1_pre~protein_data$Treatment_Arm=="Rucaparib")
+R_PDL1_lev<-leveneTest(protein_data$PD.L1_pre~protein_data$Treatment_Arm=="Rucaparib")
+R_CTLA4_lev<-leveneTest(protein_data$CTLA.4_pre~protein_data$Treatment_Arm=="Rucaparib")
+R_SIRP_lev<-leveneTest(protein_data$SIRP_pre~protein_data$Treatment_Arm=="Rucaparib")
+
+N_PD1_lev<-leveneTest(protein_data$PD.1_pre~protein_data$Treatment_Arm=="niraparib")
+N_PDL1_lev<-leveneTest(protein_data$PD.L1_pre~protein_data$Treatment_Arm=="niraparib")
+N_CTLA4_lev<-leveneTest(protein_data$CTLA.4_pre~protein_data$Treatment_Arm=="niraparib")
+N_SIRP_lev<-leveneTest(protein_data$SIRP_pre~protein_data$Treatment_Arm=="niraparib")
+
+----------------------------------------------------------------------------------------
+
 #Q1: Students ttest 
 attach(protein_data)
 
 PD1_ <- t.test(PD.1_pre ~ Treatment_Arm, var.equal = TRUE)
 PDL1_ <- t.test(PD.L1_pre ~ Treatment_Arm, var.equal = TRUE)
 
-ttest_table <- data.frame(
-  Protein = c("PD-1", "PDL-1"),
-  t_value = c(round(PD1_$statistic, 3), round(PDL1_$statistic, 3)),
-  df = c(round(PD1_$parameter, 2), round(PDL1_$parameter, 2)),
-  p_value = c(signif(PD1_$p.value, 3), signif(PDL1_$p.value, 3)),
-  mean_diff = c(round(diff(PD1_$estimate), 3), round(diff(PDL1_$estimate), 3))
-)
-
-print(ttest_table)
+--------------------------------------------------------------------
 
 #Q1: Wilcoxon Signed Rank tests
 CTLA4_p<-wilcox.test(CTLA.4_pre~Treatment_Arm)
@@ -24,20 +43,7 @@ p_values<-(c(
 )
 p.adjust(p_values)
 
-wilcox_table <- data.frame(
-  Protein = c("CTLA4", "SIRP"),
-  W_statistic = c(
-    CTLA4_p$statistic,
-    SIRP_p$statistic),
-  p_value = c(
-    CTLA4_p$p.value,
-    SIRP_p$p.value)
-)
-
-wilcox_table$W_statistic <- round(as.numeric(wilcox_table$W_statistic), 3)
-wilcox_table$p_value <- signif(as.numeric(wilcox_table$p_value), 3)
-
-print(wilcox_table)
+-----------------------------------------------------------------------
 
 #Q2: fisher's test
 library(RBioinf) 
@@ -60,6 +66,7 @@ ER_response
 
 fisher.test(ER_response)
 
+---------------------------------------------------------------------------
 
 #Q3: Kruksal-Wallis test
 library(FSA)
@@ -74,18 +81,6 @@ protein_groups<-c(rep("PD-1", length(rucaparib_treatment$PD.1_pre)),
                   rep("SIRP", length(rucaparib_treatment$SIRP_pre)))
 kruskal_result<-kruskal.test(protein_values~protein_groups) 
 
-kruskal_table <- data.frame(
-  Test = "Kruskal–Wallis",
-  Chi_Squared = unname(kruskal_result$statistic),
-  df = unname(kruskal_result$parameter),
-  p_value = kruskal_result$p.value
-)
-
-kruskal_table$Chi_Squared <- round(kruskal_table$Chi_Squared, 3)
-kruskal_table$p_value <- signif(kruskal_table$p_value, 3)
-
-print(kruskal_table)
-
 dunn_results<-dunnTest(protein_values~protein_groups, method="bh")
-results_table<-dunn_results$res
-results_table
+
+
